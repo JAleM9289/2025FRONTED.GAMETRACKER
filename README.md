@@ -1,3 +1,6 @@
+# GameTracker Frontend
+
+Este proyecto web es creado con React y Vite para llevar el control de los juegos.
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
