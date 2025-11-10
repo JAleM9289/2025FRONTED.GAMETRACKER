@@ -144,8 +144,8 @@ function App() {
       {/* === FOOTER === */}
       <footer className="border-t border-cyan-400/10 text-center text-gray-500 py-6 text-sm">
         <p>
-          Hecho por <span className="text-cyan-400">Kazuto</span> ·
-          Powered by kazuto422
+          Hecho por <span className="text-cyan-400">Jhon M. y Walther R.</span> ·
+          Powered by JW4120
         </p>
       </footer>
     </div>
