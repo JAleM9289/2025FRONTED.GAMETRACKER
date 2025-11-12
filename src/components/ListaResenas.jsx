@@ -1,70 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// src/components/ListaResenas.jsx
+import React from 'react';
 
-// **¡CORRECCIÓN!**
-// Se cambia la URL local (http://localhost:3001/api) por la URL de Render.
-const API_BASE_URL = 'https://two025backend-gametracker.onrender.com/api';
+function ListaResenas({ resenas, onResenaEliminada }) {
+  // Helper para dibujar estrellas (1–5)
+  const renderStars = (n = 0) =>
+    Array.from({ length: 5 }).map((_, i) => (
+      <span key={i} className={i < Number(n) ? 'text-yellow-300' : 'text-gray-600'}>
+        ★
+      </span>
+    ));
 
-function ListaResenas() {
-    const [resenas, setResenas] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  return (
+    <section className="fade-in my-10">
+      <h2 className="text-acento text-3xl font-orbitron text-center mb-8 drop-shadow-lg">
+      </h2>
 
-    const cargarResenas = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            // La llamada ahora va a la URL de Render: https://two025backend-gametracker.onrender.com/api/resenas
-            const response = await axios.get(`${API_BASE_URL}/resenas`);
-            setResenas(response.data);
-            
-        } catch (err) {
-            console.error('Error al cargar reseñas:', err);
-            // Mensaje de error ajustado para reflejar el despliegue
-            setError('No se pudieron cargar las reseñas. Por favor, verifica la URL de Render y el estado del Backend.');
-            
-        } finally {
-            setLoading(false);
-        }
-    };
+      {(!resenas || resenas.length === 0) ? (
+        <p className="text-center text-gray-400 italic">Aún no hay reseñas… ¡Escribe la primera! ✍️</p>
+      ) : (
+        <div className="grid gap-6 px-4 md:grid-cols-2 lg:grid-cols-3">
+          {resenas.map((resena) => (
+            <article
+              key={resena._id}
+              className="card relative p-5 rounded-2xl text-white shadow-md hover:shadow-cyan-500/30 transition"
+            >
+              {/* Cabecera: estrellas + botón eliminar */}
+              <header className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="text-lg leading-none">{renderStars(resena.puntuacion)}</div>
+                  <span className="text-sm text-gray-300">({resena.puntuacion}/5)</span>
+                </div>
 
-    useEffect(() => {
-        cargarResenas();
-    }, []); 
+                <button
+                  onClick={() => onResenaEliminada(resena._id)}
+                  className="px-3 py-1 bg-red-600/80 hover:bg-red-600 rounded-md text-sm font-semibold transition-all shadow-md hover:shadow-red-500/30"
+                  aria-label="Eliminar reseña"
+                  title="Eliminar reseña"
+                >
+                  🗑 Eliminar
+                </button>
+              </header>
 
-    if (loading) {
-        return <h3 className="loading-text">Cargando Reseñas...</h3>;
-    }
+              {/* Cuerpo: texto de reseña */}
+              <p className="text-gray-200 leading-relaxed mb-4">
+                {resena.textoReseña || <em className="text-gray-500">Sin comentarios…</em>}
+              </p>
 
-    if (error) {
-        return <h3 className="error-text">{error}</h3>;
-    }
+              {/* Pie: meta info */}
+              <footer className="flex items-center justify-between text-sm text-gray-400">
+                <span className="inline-flex items-center gap-2">
+                  ⏱️ <strong className="text-gray-200">{resena.horasJugadas || 0}</strong> h jugadas
+                </span>
+                {/* Etiqueta estética */}
+                <span className="px-2 py-0.5 rounded-md bg-cyan-400/10 border border-cyan-400/20 text-cyan-300">
+                  Reseña
+                </span>
+              </footer>
 
-    return (
-        <div className="main-content">
-            <div className="resenas-list-wrapper">
-                <h2>📝 Reseñas Recientes</h2>
-                {resenas.length === 0 ? (
-                    <p>Aún no hay reseñas. ¡Sé el primero en agregar una!</p>
-                ) : (
-                    <div className="resenas-grid">
-                        {resenas.map((resena) => (
-                            <div key={resena._id} className="resena-card">
-                                {/* ¡IMPORTANTE! Aquí se usa resena.juegoId.titulo */}
-                                <h3>{resena.juegoId ? resena.juegoId.titulo : 'Juego no encontrado'}</h3>
-                                <p className="resena-puntuacion">⭐ Puntuación: {resena.puntuacion} / 5</p>
-                                <p>🕰️ Horas Jugadas: {resena.horasJugadas}</p>
-                                <p>💪 Dificultad: {resena.dificultad}</p>
-                                <hr />
-                                <p className="resena-texto">"{resena.resena}"</p>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+              {/* Borde/decoración sutil */}
+              <div className="absolute inset-0 rounded-2xl pointer-events-none border border-cyan-400/10" />
+            </article>
+          ))}
         </div>
-    );
+      )}
+    </section>
+  );
 }
 
 export default ListaResenas;
-
