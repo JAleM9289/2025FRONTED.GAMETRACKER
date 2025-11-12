@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   // AÑADE ESTA LÍNEA: debe ser el nombre exacto de tu repositorio.
-  base: "/gametracker-frontend/", 
+  base: "/2025FRONTED.GAMETRACKER/", 
 })
