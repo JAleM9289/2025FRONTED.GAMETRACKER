@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3001/api';
+// **¡CORRECCIÓN!**
+// Se cambia la URL local (http://localhost:3001/api) por la URL de Render.
+const API_BASE_URL = 'https://two025backend-gametracker.onrender.com/api';
 
 function ListaResenas() {
     const [resenas, setResenas] = useState([]);
@@ -12,14 +14,14 @@ function ListaResenas() {
         setLoading(true);
         setError(null);
         try {
-            // Llama a la API /api/resenas. 
-            // El Backend (routes/resenas.js) ya usa POPULATE para traer el título del juego.
+            // La llamada ahora va a la URL de Render: https://two025backend-gametracker.onrender.com/api/resenas
             const response = await axios.get(`${API_BASE_URL}/resenas`);
             setResenas(response.data);
             
         } catch (err) {
             console.error('Error al cargar reseñas:', err);
-            setError('No se pudieron cargar las reseñas. ¿Está el Backend corriendo y la ruta /api/resenas correcta?');
+            // Mensaje de error ajustado para reflejar el despliegue
+            setError('No se pudieron cargar las reseñas. Por favor, verifica la URL de Render y el estado del Backend.');
             
         } finally {
             setLoading(false);
