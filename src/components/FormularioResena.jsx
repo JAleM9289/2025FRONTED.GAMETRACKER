@@ -1,6 +1,8 @@
-// src/components/FormularioResena.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
+
+// CLAVE: URL de la API de Render
+const API_BASE_URL = "https://twd025backend-gametracker-2.onrender.com";
 
 function FormularioResena({ juegos, onResenaAgregada }) {
   const [formData, setFormData] = useState({
@@ -21,12 +23,14 @@ function FormularioResena({ juegos, onResenaAgregada }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // NOTA: window.alert no es ideal, pero lo mantenemos por ahora.
     if (!formData.juegoId) {
       alert('Por favor, selecciona un juego.');
       return;
     }
 
-    axios.post('http://localhost:3001/api/resenas', formData)
+    // URL CORREGIDA: Se usa la constante API_BASE_URL
+    axios.post(`${API_BASE_URL}/api/resenas`, formData)
       .then(response => {
         console.log('¡Reseña agregada!', response.data);
         onResenaAgregada();
@@ -48,13 +52,13 @@ function FormularioResena({ juegos, onResenaAgregada }) {
       onSubmit={handleSubmit}
       className="card fade-in p-6 max-w-md mx-auto text-white"
     >
-      <h2 className="text-acento text-2xl font-orbitron mb-6 text-center drop-shadow-md">
+      <h2 className="text-cyan-400 text-2xl font-orbitron mb-6 text-center drop-shadow-md">
         📝 Escribir Nueva Reseña
       </h2>
 
       {/* Selección de juego */}
       <div className="mb-4">
-        <label className="block mb-2 text-sm font-semibold tracking-wide text-acento">
+        <label className="block mb-2 text-sm font-semibold tracking-wide text-cyan-400">
           Juego
         </label>
         <select
@@ -79,7 +83,7 @@ function FormularioResena({ juegos, onResenaAgregada }) {
 
       {/* Puntuación */}
       <div className="mb-4">
-        <label className="block mb-2 text-sm font-semibold tracking-wide text-acento">
+        <label className="block mb-2 text-sm font-semibold tracking-wide text-cyan-400">
           Puntuación (1 - 5)
         </label>
         <input
@@ -96,7 +100,7 @@ function FormularioResena({ juegos, onResenaAgregada }) {
 
       {/* Horas Jugadas */}
       <div className="mb-4">
-        <label className="block mb-2 text-sm font-semibold tracking-wide text-acento">
+        <label className="block mb-2 text-sm font-semibold tracking-wide text-cyan-400">
           Horas Jugadas
         </label>
         <input
@@ -111,7 +115,7 @@ function FormularioResena({ juegos, onResenaAgregada }) {
 
       {/* Dificultad */}
       <div className="mb-4">
-        <label className="block mb-2 text-sm font-semibold tracking-wide text-acento">
+        <label className="block mb-2 text-sm font-semibold tracking-wide text-cyan-400">
           Dificultad
         </label>
         <select
@@ -129,7 +133,7 @@ function FormularioResena({ juegos, onResenaAgregada }) {
 
       {/* Texto de reseña */}
       <div className="mb-4">
-        <label className="block mb-2 text-sm font-semibold tracking-wide text-acento">
+        <label className="block mb-2 text-sm font-semibold tracking-wide text-cyan-400">
           Reseña
         </label>
         <textarea

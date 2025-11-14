@@ -1,7 +1,9 @@
-// src/components/FormularioJuego.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Fuse from 'fuse.js';
+
+// CLAVE: URL de la API de Render
+const API_BASE_URL = "https://twd025backend-gametracker-2.onrender.com";
 
 function FormularioJuego({ onJuegoAgregado }) {
   const [formData, setFormData] = useState({
@@ -19,7 +21,6 @@ function FormularioJuego({ onJuegoAgregado }) {
   const [valido, setValido] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  // --- Cargamos juegos base comunes (por si no hay conexión) ---
   useEffect(() => {
     setJuegosBase([
       'Grand Theft Auto V',
@@ -50,14 +51,13 @@ function FormularioJuego({ onJuegoAgregado }) {
     threshold: 0.4,
   });
 
-  // --- Función que busca automáticamente info e imagen del juego ---
   const buscarJuegoEnRAWG = async (nombre) => {
     try {
       setLoading(true);
       const res = await axios.get(`https://api.rawg.io/api/games`, {
         params: {
           search: nombre,
-          key: import.meta.env.VITE_RAWG_KEY, // ✅ API Key desde .env
+          key: import.meta.env.VITE_RAWG_KEY, 
         },
       });
 
@@ -96,7 +96,6 @@ function FormularioJuego({ onJuegoAgregado }) {
         if (score > 0.25) setSugerencia(mejorCoincidencia);
         else setSugerencia(null);
 
-        // Buscar automáticamente la imagen del juego
         await buscarJuegoEnRAWG(value.trim());
       } else {
         setValido(false);
@@ -108,13 +107,15 @@ function FormularioJuego({ onJuegoAgregado }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // NOTA: window.alert no es ideal.
     if (!valido) {
       alert('⚠️ No se reconoce ese juego. Corrige el título antes de continuar.');
       return;
     }
 
+    // URL CORREGIDA DE LOCALHOST A RENDER
     axios
-      .post('http://localhost:3001/api/juegos', formData)
+      .post(`${API_BASE_URL}/api/juegos`, formData)
       .then(() => {
         onJuegoAgregado();
         setFormData({
