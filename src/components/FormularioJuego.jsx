@@ -1,10 +1,10 @@
+// src/components/FormularioJuego.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Fuse from 'fuse.js';
 
-// CLAVE: Se usa un proxy para forzar los encabezados CORS en las peticiones
-const RENDER_URL = "https://twd025backend-gametracker-2.onrender.com";
-const API_BASE_URL = `https://corsproxy.io/?${encodeURIComponent(RENDER_URL)}`;
+// 🔥 URL REAL del backend (SIN PROXY)
+const API_BASE_URL = "https://two025backend-gametracker-2.onrender.com/api";
 
 function FormularioJuego({ onJuegoAgregado }) {
   const [formData, setFormData] = useState({
@@ -55,14 +55,14 @@ function FormularioJuego({ onJuegoAgregado }) {
   const buscarJuegoEnRAWG = async (nombre) => {
     try {
       setLoading(true);
-      const res = await axios.get(`https://api.rawg.io/api/games`, {
+      const res = await axios.get("https://api.rawg.io/api/games", {
         params: {
           search: nombre,
-          key: import.meta.env.VITE_RAWG_KEY, 
+          key: import.meta.env.VITE_RAWG_KEY,
         },
       });
 
-      if (res.data.results && res.data.results.length > 0) {
+      if (res.data.results?.length > 0) {
         const juego = res.data.results[0];
         setFormData((prev) => ({
           ...prev,
@@ -78,7 +78,7 @@ function FormularioJuego({ onJuegoAgregado }) {
         setValido(false);
       }
     } catch (err) {
-      console.error('Error al buscar en RAWG:', err);
+      console.error("Error al buscar en RAWG:", err);
     } finally {
       setLoading(false);
     }
@@ -88,15 +88,13 @@ function FormularioJuego({ onJuegoAgregado }) {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    if (name === 'titulo' && value.trim().length > 2) {
+    if (name === "titulo" && value.trim().length > 2) {
       const result = fuse.search(value.trim());
       if (result.length > 0) {
-        const mejorCoincidencia = result[0].item;
+        const mejor = result[0].item;
         const score = result[0].score;
         setValido(true);
-        if (score > 0.25) setSugerencia(mejorCoincidencia);
-        else setSugerencia(null);
-
+        setSugerencia(score > 0.25 ? mejor : null);
         await buscarJuegoEnRAWG(value.trim());
       } else {
         setValido(false);
@@ -105,30 +103,32 @@ function FormularioJuego({ onJuegoAgregado }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!valido) {
-      alert('⚠️ No se reconoce ese juego. Corrige el título antes de continuar.');
+      alert("⚠️ No se reconoce ese juego.");
       return;
     }
 
-    // URL CORREGIDA: Usa el proxy para la petición POST
-    axios
-      .post(`${API_BASE_URL}/api/juegos`, formData)
-      .then(() => {
-        onJuegoAgregado();
-        setFormData({
-          titulo: '',
-          genero: '',
-          plataforma: '',
-          añoLanzamiento: 2024,
-          desarrollador: '',
-          imagenPortada: '',
-          descripcion: '',
-        });
-      })
-      .catch((err) => console.error('Error al agregar el juego:', err));
+    try {
+      await axios.post(`${API_BASE_URL}/juegos`, formData);
+      onJuegoAgregado();
+
+      // limpiar
+      setFormData({
+        titulo: '',
+        genero: '',
+        plataforma: '',
+        añoLanzamiento: 2024,
+        desarrollador: '',
+        imagenPortada: '',
+        descripcion: '',
+      });
+
+    } catch (err) {
+      console.error("Error al agregar el juego:", err);
+    }
   };
 
   return (
@@ -151,7 +151,7 @@ function FormularioJuego({ onJuegoAgregado }) {
           onChange={handleChange}
           placeholder="Ejemplo: Grand Theft Auto V"
           className={`w-full p-2 rounded-md border ${
-            valido ? 'border-gray-600' : 'border-red-500'
+            valido ? "border-gray-600" : "border-red-500"
           } bg-[#0b0f25] text-white`}
           required
         />
@@ -162,14 +162,12 @@ function FormularioJuego({ onJuegoAgregado }) {
         </datalist>
 
         {!valido && (
-          <p className="text-red-400 text-sm mt-1">
-            ❌ No se reconoce ese juego.
-          </p>
+          <p className="text-red-400 text-sm mt-1">❌ No se reconoce ese juego.</p>
         )}
 
         {sugerencia && (
           <p className="text-yellow-400 text-sm mt-1">
-            💡 ¿Quizás quisiste decir: <strong>{sugerencia}</strong>?
+            💡 ¿Quisiste decir: <strong>{sugerencia}</strong>?
           </p>
         )}
       </div>
@@ -185,7 +183,7 @@ function FormularioJuego({ onJuegoAgregado }) {
         </div>
       )}
 
-      {/* Resto de campos */}
+      {/* Otros campos */}
       <div>
         <label className="block mb-1 text-sm">Género:</label>
         <input
@@ -223,7 +221,7 @@ function FormularioJuego({ onJuegoAgregado }) {
         type="submit"
         className="btn-gamer w-full mt-4 font-semibold text-lg tracking-wide"
       >
-        {loading ? 'Buscando juego...' : 'Agregar Juego'}
+        {loading ? "Buscando..." : "Agregar Juego"}
       </button>
     </form>
   );

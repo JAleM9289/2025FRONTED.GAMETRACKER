@@ -1,9 +1,9 @@
+// src/components/FormularioResena.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 
-// CLAVE: Se usa un proxy para forzar los encabezados CORS
-const RENDER_URL = "https://twd025backend-gametracker-2.onrender.com";
-const API_BASE_URL = `https://corsproxy.io/?${encodeURIComponent(RENDER_URL)}`;
+// 🔥 URL REAL del backend (SIN PROXY)
+const API_BASE_URL = "https://two025backend-gametracker-2.onrender.com/api";
 
 function FormularioResena({ juegos, onResenaAgregada }) {
   const [formData, setFormData] = useState({
@@ -11,17 +11,17 @@ function FormularioResena({ juegos, onResenaAgregada }) {
     puntuacion: 5,
     textoReseña: '',
     horasJugadas: 0,
-    dificultad: 'Normal'
+    dificultad: 'Normal',
   });
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.juegoId) {
@@ -29,22 +29,23 @@ function FormularioResena({ juegos, onResenaAgregada }) {
       return;
     }
 
-    // URL CORREGIDA: Se usa el proxy para la petición POST
-    axios.post(`${API_BASE_URL}/api/resenas`, formData)
-      .then(response => {
-        console.log('¡Reseña agregada!', response.data);
-        onResenaAgregada();
-        setFormData({
-          juegoId: '',
-          puntuacion: 5,
-          textoReseña: '',
-          horasJugadas: 0,
-          dificultad: 'Normal'
-        });
-      })
-      .catch(error => {
-        console.error('¡Hubo un error al agregar la reseña!', error);
+    try {
+      const res = await axios.post(`${API_BASE_URL}/resenas`, formData);
+      console.log('¡Reseña agregada!', res.data);
+
+      onResenaAgregada();
+
+      // Reset form
+      setFormData({
+        juegoId: '',
+        puntuacion: 5,
+        textoReseña: '',
+        horasJugadas: 0,
+        dificultad: 'Normal',
       });
+    } catch (error) {
+      console.error('¡Hubo un error al agregar la reseña!', error);
+    }
   };
 
   return (
