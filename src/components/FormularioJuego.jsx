@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Fuse from 'fuse.js';
 
-// CLAVE: URL de la API de Render
-const API_BASE_URL = "https://twd025backend-gametracker-2.onrender.com";
+// CLAVE: Se usa un proxy para forzar los encabezados CORS en las peticiones
+const RENDER_URL = "https://twd025backend-gametracker-2.onrender.com";
+const API_BASE_URL = `https://corsproxy.io/?${encodeURIComponent(RENDER_URL)}`;
 
 function FormularioJuego({ onJuegoAgregado }) {
   const [formData, setFormData] = useState({
@@ -107,13 +108,12 @@ function FormularioJuego({ onJuegoAgregado }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // NOTA: window.alert no es ideal.
     if (!valido) {
       alert('⚠️ No se reconoce ese juego. Corrige el título antes de continuar.');
       return;
     }
 
-    // URL CORREGIDA DE LOCALHOST A RENDER
+    // URL CORREGIDA: Usa el proxy para la petición POST
     axios
       .post(`${API_BASE_URL}/api/juegos`, formData)
       .then(() => {

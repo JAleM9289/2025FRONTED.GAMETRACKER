@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-// CLAVE: URL de la API de Render
-const API_BASE_URL = "https://twd025backend-gametracker-2.onrender.com";
+// CLAVE: Se usa un proxy para forzar los encabezados CORS
+const RENDER_URL = "https://twd025backend-gametracker-2.onrender.com";
+const API_BASE_URL = `https://corsproxy.io/?${encodeURIComponent(RENDER_URL)}`;
 
 function FormularioResena({ juegos, onResenaAgregada }) {
   const [formData, setFormData] = useState({
@@ -23,13 +24,12 @@ function FormularioResena({ juegos, onResenaAgregada }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // NOTA: window.alert no es ideal, pero lo mantenemos por ahora.
     if (!formData.juegoId) {
       alert('Por favor, selecciona un juego.');
       return;
     }
 
-    // URL CORREGIDA: Se usa la constante API_BASE_URL
+    // URL CORREGIDA: Se usa el proxy para la petición POST
     axios.post(`${API_BASE_URL}/api/resenas`, formData)
       .then(response => {
         console.log('¡Reseña agregada!', response.data);
