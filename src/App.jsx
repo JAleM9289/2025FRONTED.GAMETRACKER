@@ -8,13 +8,17 @@ import ListaResenas from "./components/ListaResenas";
 import FormularioResena from "./components/FormularioResena";
 import EstadisticasPersonales from "./components/EstadisticasPersonales";
 
-const API_BASE_URL = "https://twd025backend-gametracker-2.onrender.com";
+// CLAVE: Se usa un proxy para forzar los encabezados CORS
+// La URL de Render va codificada DENTRO del proxy.
+const RENDER_URL = "https://twd025backend-gametracker-2.onrender.com";
+const API_BASE_URL = `https://corsproxy.io/?${encodeURIComponent(RENDER_URL)}`;
 
 function App() {
   const [juegos, setJuegos] = useState([]);
   const [resenas, setResenas] = useState([]);
   const [vistaActual, setVistaActual] = useState("inicio"); 
 
+  // Cargar datos (GET)
   const fetchJuegos = () => {
     axios
       .get(`${API_BASE_URL}/api/juegos`)
@@ -34,6 +38,7 @@ function App() {
     fetchResenas();
   }, []);
 
+  // Manejadores (DELETE y PUT)
   const handleDeleteJuego = (id) => {
     if (window.confirm("¿Eliminar este juego?")) { 
       axios
